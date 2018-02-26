@@ -1,0 +1,254 @@
+h1. lrun
+
+!https://api.travis-ci.org/quark-zju/lrun.png!:https://travis-ci.org/quark-zju/lrun
+
+Run programs on Linux with resources (ex. time, memory, network, device, syscall, etc.) limited.
+
+h2. Dependencies
+
+h3. Runtime dependencies
+
+* *linux*: (>= 2.6.26 minimal, >= 3.12 recommended) you can check kernel config using @utils/check_linux_config.rb@.
+* *libseccomp*: (optionally, 2.x) to enable syscall filtering feature.
+
+h3. Build dependencies
+
+* *rake*: process Rakefile.
+* *g++*: g++ 4.6 and above recommended, 4.4 should work as well. Or clang++
+* *install*: install binaries.
+* *pkg-config*: (optional) get information about libseccomp.
+* *git*: (optional) get version information.
+
+h3. Installation dependencies
+
+* *groupadd*: create @lrun@ group.
+* *sudo*: (optional) install via a non-root user.
+
+h2. Installation
+
+h3. Build from source
+
+<pre>
+make install  # or: cd src && rake install
+</pre>
+
+h4. Configuration
+
+@lrun@ does not have any config files. However, non-root users must be added to @lrun@ group to be able to run @lrun@:
+
+<pre>
+gpasswd -a username lrun
+</pre>
+
+Note: On Linux <= 3.5, if sudo is installed, a user in lrun group can use lrun for privilege escalation.
+
+h4. Build options
+
+There are several environment variables which can affect building process:
+
+* *PREFIX*: Install destination. Default is @/usr/local@.
+* *CXX*: The C++ compiler. For example, @clang++@ or @g++@
+* *CXXFLAGS*: Flags used for C++ compiler. Default is @-O2 -Wall@
+* *INSTALL*: @install@ binary.
+* *LRUN_GROUP*: The group which have access to run lrun directly. Default is @lrun@.
+* *NDEBUG*: If set, remove some debug code and produce smaller executable.
+* *NOSECCOMP*: If set, always build without libseccomp support.
+
+h3. Archlinux
+
+Archlinux users can install lrun from AUR:
+
+<pre>
+yaourt -S lrun
+</pre>
+
+
+h2. Usage
+
+<pre>lrun --help</pre>
+
+h2. Output Format
+
+lrun writes its final output to fd 3. This makes it easier for you to pass @stdin@, @stdout@, @stderr@ to the child process. If lrun runs successfully, its fd 3 output is like (@#@ starts a comment), which is pretty self-explanatory:
+
+<pre>
+MEMORY   int         # in bytes
+CPUTIME  float       # in seconds
+REALTIME float       # in seconds
+SIGNALED int         # one of: 0, 1. 1 means the process is signaled (exit abnormally)
+EXITCODE int         # exit code
+TERMSIG  int         # signal number, 0 if not signaled
+EXCEED   excced_enum # one of: none, CPU_TIME, REAL_TIME, MEMORY, OUTPUT
+</pre>
+
+
+h2. Examples
+
+h3. Limit time
+
+<pre>
+% lrun --max-cpu-time 1.5 bash -c ':(){ :;};:' 3>&1
+MEMORY   10461184
+CPUTIME  1.500
+REALTIME 1.507
+SIGNALED 0
+EXITCODE 0
+TERMSIG  0
+EXCEED   CPU_TIME
+</pre>
+
+<pre>
+% lrun --max-real-time 1.0 sleep 2 3>&1
+MEMORY   393216
+CPUTIME  0.001
+REALTIME 1.000
+SIGNALED 0
+EXITCODE 0
+TERMSIG  0
+EXCEED   REAL_TIME
+</pre>
+
+h3. Limit memory
+
+<pre>
+% lrun --max-memory 1000000 gedit 3>&1
+MEMORY   1000000
+CPUTIME  0.003
+REALTIME 0.020
+SIGNALED 0
+EXITCODE 0
+TERMSIG  0
+EXCEED   MEMORY
+</pre>
+
+h3. Restrict network
+
+<pre>
+% lrun --network true /sbin/ip addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP qlen 1000
+    link/ether 00:26:82:af:cf:75 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.3/24 brd 192.168.1.255 scope global wlan0
+    inet6 fe80::226:82ff:feaf:cf75/64 scope link
+       valid_lft forever preferred_lft forever
+
+% lrun --network false /sbin/ip addr
+205: lo: <LOOPBACK> mtu 16436 qdisc noop state DOWN
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+</pre>
+
+h3. Isolate processes
+
+<pre>
+% lrun --isolate-process false bash -c 'echo $$'
+10140
+
+% lrun --isolate-process true bash -c 'echo $$'
+2  # or 1, see Note below
+</pre>
+
+On Linux >= 3.8, the user process won't run as pid 1. Instead, a dummy init process is spawned and the user process will run as pid 2. This avoids some potential issues because pid 1 has some special behaviors.
+
+h3. Change uid
+
+<pre>
+% sudo lrun --uid 2000 --gid 200 /usr/bin/sudo ls
+sudo: unknown uid 2000: who are you?
+</pre>
+
+Non-root users cannot use @--uid@ and @--gid@ and root must provide these two options.
+
+h3. Mount tmpfs
+
+<pre>
+% lrun ls /usr
+NX  bin  i486-mingw32  include	lib  lib32  local  man	sbin  share  src  x86_64-unknown-linux-gnu
+
+% lrun --tmpfs /var 40960 df /var
+Filesystem     1K-blocks  Used Available Use% Mounted on
+none                  40     0        40   0% /usr
+
+% lrun --tmpfs /tmp 0 touch /tmp/abc 3>&1
+touch: cannot touch `/tmp/abc': Read-only file system
+MEMORY   262144
+CPUTIME  0.001
+REALTIME 0.090
+SIGNALED 0
+EXITCODE 1
+TERMSIG  0
+EXCEED   none
+</pre>
+
+There is also @--bindfs@. Non-root users can only mount A to B if he or she can read A.
+
+h3. Syscall filter
+
+This requires libseccomp >= 2.0, at both compile and run time.
+
+<pre>
+% lrun readlink /lib
+usr/lib
+</pre>
+
+<pre>
+% lrun --syscalls '!readlink' readlink /lib 3>&1
+MEMORY   262144
+CPUTIME  0.000
+REALTIME 0.070
+SIGNALED 0
+EXITCODE 1
+TERMSIG  0
+EXCEED   none
+</pre>
+
+h3. File-open filter
+
+<pre>
+% lrun --fopen-filter f:/etc/fstab d cat /etc/fstab
+cat: /etc/fstab: Operation not permitted
+</pre>
+
+<pre>
+% lrun --fopen-filter 'm:/proc:^/proc/.*stat.*$' d wc -l /proc/self/status
+wc: /proc/self/status: Operation not permitted
+</pre>
+
+<pre>
+% lrun --fopen-filter 'm:/proc:^/proc/.*stat.*$' d wc -l /proc/self/io
+7 /proc/self/io
+</pre>
+
+h3. Realtime status
+
+Use @--status@ to show realtime cpu, memory usage information:
+
+<pre>
+% lrun --status firefox
+</pre>
+
+h2. Utilities
+
+There are some related utilities in @utils@ directory. You may find some of them helpful.
+
+h3. mirrorfs
+
+A utility helps to set up chroot environments by mirror partial of the current filesystem. The binary is available as lrun-mirrorfs in deb package.
+
+h2. Troubleshooting
+
+*Error: "FATAL: can not mount cgroup memory on '/sys/fs/cgroup/memory' (No such file or directory)"*
+
+You are probably using Debian. Memory controller is compiled but deactivated. Try adding @cgroup_enable=memory@ as a kernel parameter.
+When using grub2, this can be done by editing @GRUB_CMDLINE_LINUX@ in @/etc/default/grub@ and running @update-grub2@.
+
+*File-open filter cannot be used*
+
+You are probably using Debian. File-open filter requires the kernel to be compiled with @CONFIG_FANOTIFY_ACCESS_PERMISSIONS@. Sadly Debian "refused":https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=690737 to enable it.
+
+*dmesg prints @trap ... ip:... sp:... in ...@ and I don't want to see them*
+
+Try @sysctl -w debug.exception-trace=0@.

@@ -1,0 +1,47 @@
+lrun (1.1.4) unstable; urgency=low
+
+  * lrun-mirrorfs: support touch.
+  * Fix compilation in some environment without libseccomp.
+
+ -- Jun Wu <quark@lihdd.net>  Tue, 13 Jan 2014 20:08:56 +0800
+
+lrun (1.1.3) unstable; urgency=low
+
+  * Treat fopen-filter problem as lrun internal error.
+  * Fix fd overflow in fstracer.
+  * Abandon pthread to get rid of setgid deadlock.
+
+ -- Jun Wu <quark@lihdd.net>  Sat, 11 Jan 2014 10:45:12 +0800
+
+lrun (1.1.2) unstable; urgency=low
+
+  * lrun-mirrorfs: allow glob pattern on directories.
+
+ -- Jun Wu <quark@lihdd.net>  Sat, 10 Jan 2014 22:01:07 +0800
+
+lrun (1.1.1) unstable; urgency=low
+
+  * New utility helping create chroot environments - mirrorfs.
+
+ -- Jun Wu <quark@lihdd.net>  Fri, 09 Jan 2014 19:47:24 +0800
+
+lrun (1.1.0) unstable; urgency=low
+
+  * New powerful file open filter.
+  * Add sanity check on cgroup option keys.
+  * No freeze when killing processes using the legacy method.
+  * Fix incorrect exitcode and signal reported by lrun sometimes.
+
+ -- Jun Wu <quark@lihdd.net>  Wed, 07 Jan 2014 23:22:51 +0800
+
+lrun (1.0.1) unstable; urgency=low
+
+  * Minor fixes.
+
+ -- Jun Wu <quark@lihdd.net>  Wed, 10 Dec 2014 13:54:08 +0800
+
+lrun (1.0.0) unstable; urgency=low
+
+  * Initial debian package release.
+
+ -- Jun Wu <quark@lihdd.net>  Tue, 04 Nov 2014 17:00:00 +0800

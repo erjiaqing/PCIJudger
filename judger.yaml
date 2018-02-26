@@ -1,4 +1,2 @@
-server: "http://localhost:8360"
-key: "0123456789abcdef"
-sign: "abcdef0123456789"
-git: "/usr/bin/git"
+tmp: "/runner_tmp"
+datapath: "/"

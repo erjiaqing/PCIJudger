@@ -18,9 +18,6 @@ from . import log as logger
 # stdout: redirect stdout
 # stderr: redirect stderr
 def execute(cmd, timelimit=None, memorylimit=None, timeratio=1., limit_syscall=False, stdin=None, stdout=None, stderr=None):
-    log = logger.PCILog("executor")
-    log.append(" ".join(cmd))
-    logging.debug('will execute: {cmd}'.format(cmd=cmd))
     if timelimit == None:
         timelimit = 1
     if memorylimit == None:
@@ -42,17 +39,11 @@ def execute(cmd, timelimit=None, memorylimit=None, timeratio=1., limit_syscall=F
                 return (True, 1, time.time() - exeStart, 0, log, 'TLE')
             time.sleep(0.01)
         exeTime = time.time() - exeStart
-        log.append('exitcode={} time={:0.3}'.format(exe.returncode, exeTime))
-        return (True, 0, exeTime/timeratio, exe.returncode, log, 'none')
+        return (True, 0, exeTime/timeratio, exe.returncode, None, 'none')
     except OSError:
-        logging.error('Cannot execute')
-        log.append('cannot execute')
-        return (False, 0, 0., -1, log, 'SE')
+        return (False, 0, 0., -1, None, 'SE')
     except ValueError:
-        logging.error('Wrong arguments')
-        log.append('wrong arguments')
-        return (False, 0, 0., -1, log, 'SE')
+        return (False, 0, 0., -1, None, 'SE')
     except Exception as e:
         logging.error('Unknown error: {}'.format(e))
-        log.append('unknown error')
-        return (False, 0, 0., -1, log, 'SE')
+        return (False, 0, 0., -1, None, 'SE')

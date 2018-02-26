@@ -1,0 +1,14 @@
+language: cpp
+branches:
+  only:
+    - master
+rvm:
+  - 1.9.3
+compiler:
+  - gcc
+  - clang
+env:
+  - NDEBUG=1
+  - ''
+script:
+  - pushd src && rake install && popd

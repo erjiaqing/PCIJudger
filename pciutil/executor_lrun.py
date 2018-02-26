@@ -58,7 +58,7 @@ def execute(cmd, timelimit=None, memorylimit=None, timeratio=1., limit_syscall=F
         exitcode = 0
         if result['exceeded'] == 'REAL_TIME' or result['exceeded'] == 'CPU_TIME':
             exit_reason = 'TLE'
-        elif result['exceeded'] == 'MEMORY'
+        elif result['exceeded'] == 'MEMORY':
             exit_reason = 'MLE'
         elif result['exitsig'] != 0:
             exitcode = -result['exitsig']

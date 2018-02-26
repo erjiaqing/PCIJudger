@@ -12,12 +12,12 @@ def check_or_create(path):
         os.makedirs(path)
         
 def read_first_bytes(path):
-    try:
-        with open(os.path.join(problem, test['input']), 'rb') as inputfile:
-            if os.getsize(os.path.join(problem, test['input'])) > 64 + 32:
-                ret = inputfile.read(64).decode('utf-8', 'backslashreplace') + '...({} bytes)'.format(os.getsize(os.path.join(problem, test['input'])) - 64)
+    if True:
+        with open(os.path.join(path), 'rb') as inputfile:
+            if os.path.getsize(os.path.join(path)) > 64 + 32:
+                ret = inputfile.read(64).decode('utf-8', 'backslashreplace') + '...({} bytes)'.format(os.path.getsize(os.path.join(path) - 64))
             else:
                 ret = inputfile.read().decode('utf-8', 'backslashreplace')
         return ret
-    except:
-        return "(unable to read file)"
+    #except:
+    #    return '(unable to read file)'

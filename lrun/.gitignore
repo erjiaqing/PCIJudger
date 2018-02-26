@@ -1,0 +1,17 @@
+# no object files
+*.o
+
+# no kdevelop project files
+*.kdev4
+
+# no binaries
+test/[a-z_]*
+src/lrun
+utils/mirrorfs/mirrorfs
+*.so
+
+# include sources
+!*.cc
+!*.h
+!*.rb
+!Makefile

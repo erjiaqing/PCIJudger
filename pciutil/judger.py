@@ -10,7 +10,7 @@ from . import executor as executor
 class JudgeResult:
     def __init__(self, result, exe_time, exe_memory, exit_code, used_time, detail):
         self.success = True
-        self.result = result
+        self.verdict = result
         self.exe_time = exe_time
         self.exe_memory = exe_memory
         self.exit_code = exit_code
@@ -28,7 +28,7 @@ def judge(conf, lang_file, code, problem):
             lang = yaml.load(lang_fp)
         # 为Docker设计，不需要再创建临时目录
         working_dir = conf['tmp']
-        os.chdir(workding_dir)
+        os.chdir(working_dir)
         # 计算编译和运行的参数
         full_args = compiler.get_execute_command(lang, code, os.getcwd(), True)
         # 写文件
@@ -62,26 +62,29 @@ def judge(conf, lang_file, code, problem):
             this_detail['exe_time'] = execute_res.exe_time
             this_detail['exe_memory'] = execute_res.exe_memory
             if execute_res.exe_time > exe_time:
-                exe_time = execute_res[2]
+                exe_time = execute_res.exe_time
             if execute_res.exe_memory > exe_memory:
-                exe_memory = execute_res[1]
+                exe_memory = execute_res.exe_memory
             if execute_res.exit_reason != 'none':
                 verdict = execute_res.exit_reason
+                this_detail['verdict'] = verdict
                 detail.append(this_detail)
                 break
             this_detail['answer'] = func.read_first_bytes(os.path.join(problem, test['output']))
             this_detail['your output'] = func.read_first_bytes("stdout")
             # TODO: checker按checker的语言来跑
             checker_cmd = [os.path.join(problem, problem_yaml['checker'].get('exe', problem_yaml['checker']['source'] + '.exe')), os.path.join(problem, test['input']), os.path.join(problem, test['output']), 'stdout']
-            log.append("running checker ({}) to check the answer\n".format(problem_yaml['checker'].get('exe', problem_yaml['checker']['source'] + '.exe')))
             checker_stdout = open('chk_stdout', 'w')
             checker_res = executor.execute(checker_cmd, timelimit=time_limit, stdout=checker_stdout, stderr=checker_stdout)
             checker_stdout.close()
             this_detail['checker'] = func.read_first_bytes("chk_stdout")
             if checker_res[3] != 0:
                 verdict = 'WA'
+                this_detail['verdict'] = verdict
                 detail.append(this_detail)
                 break
+            this_detail['verdict'] = verdict
+            detail.append(this_detail)
     except Exception as e:
         traceback.print_exc()
         logging.error(e)
