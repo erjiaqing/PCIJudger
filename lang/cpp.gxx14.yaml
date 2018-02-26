@@ -6,13 +6,12 @@ source: "{filename}"
 executable: "{filename}.exe"
 compile:
   args:
-    - "/usr/bin/g++-7"
+    - "/usr/bin/g++"
     - "{source}"
     - "-o"
     - "{executable}"
     - "-O2"
     - "-lm"
-    - "--std=c++14"
     - "-DONLINE_JUDGE"
   timelimit: 10.0
 execute:

@@ -1,10 +1,10 @@
 #!/usr/bin/python3
-import requests, json, yaml, os, sys, shutil
+import json, yaml, os, sys, shutil
 import logging, traceback, time, base64
 import tarfile, re
 import argparse
 
-from pciutil import check, func, executor, judger
+from pciutil import func, judger
 
 LOGGING_FORMAT = '%(asctime)s %(levelname)8s : %(message)s'
 logging.basicConfig(format=LOGGING_FORMAT, datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
@@ -13,7 +13,6 @@ conf = {}
 
 def check_or_create(path):
     if not os.path.exists(path):
-        logging.info('Path %s does not exist', path)
         os.makedirs(path)
 
 if __name__ == '__main__':

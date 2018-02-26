@@ -1,4 +1,4 @@
-import requests, json, yaml, os, sys, shutil, time
+import json, yaml, os, sys, shutil, time
 import logging, traceback, time, base64, hashlib
 import tarfile, re
 import subprocess, traceback
@@ -38,7 +38,8 @@ def judge(conf, lang_file, code, problem):
         src_file.close()
         # 编译
         result = compiler.compile(lang, os.getcwd(), full_args.source)
-        detail.append(dict(name="Compiler", output=result.compiler_output))
+        if result.compiler_output != "":
+            detail.append(dict(name="Compiler", output=result.compiler_output))
         if result.exit_code != 0:
             verdict = "CE"
             raise Exception("CE")

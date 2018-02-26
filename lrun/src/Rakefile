@@ -183,12 +183,12 @@ task :lrun_group do |t|
   next if File.read('/etc/group').lines.any? { |line| /^#{LRUN_GROUP}:/ =~ line }
   # add lrun group
   require_executable! GROUPADD
-  root_sh "#{GROUPADD} -r #{LRUN_GID ? "-g #{LRUN_GID}" : ''} #{LRUN_GROUP}"
+  sh "#{GROUPADD} -r #{LRUN_GID ? "-g #{LRUN_GID}" : ''} #{LRUN_GROUP}"
 end
 
 task :install => [BIN, :lrun_group] do |t|
   require_executable! INSTALL
   install_flags = "-D -m4550 -oroot -g#{LRUN_GROUP}"
   install_flags << ' -s' if ENV['NDEBUG']
-  root_sh "#{INSTALL} #{install_flags} #{BIN} #{ENV['DESTDIR']}#{PREFIX}/bin/lrun"
+  sh "#{INSTALL} #{install_flags} #{BIN} #{ENV['DESTDIR']}#{PREFIX}/bin/lrun"
 end

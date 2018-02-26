@@ -33,15 +33,13 @@ def execute(cmd, timelimit=None, memorylimit=None, timeratio=1., limit_syscall=F
         stdin = subprocess.DEVNULL
     if stdout == None:
         stdout = subprocess.DEVNULL
-    if stderr == None:
-        stderr = subprocess.DEVNULL
+    #if stderr == None:
+    #    stderr = subprocess.DEVNULL
     try:
         cpu_tl = timelimit * timeratio
         real_tl = cpu_tl * 1.5
         result_yaml = open('result.yaml', 'w')
         rcmd = ['/usr/local/bin/lrun', '--max-real-time', str(real_tl), '--max-cpu-time', str(cpu_tl), '--max-stack', '536870912', '--max-memory', str(memorylimit), '--network', 'false', '--result-fd', str(result_yaml.fileno())]
-        if limit_syscall:
-            rcmd.extend(['--syscalls', '!execve,flock,ptrace,sync,fdatasync,fsync,msync,sync_file_range,syncfs,unshare,setns,clone[a&268435456==268435456],query_module,sysinfo,syslog,sysfs'])
         rcmd.append('--')
         rcmd.extend(cmd)
         exe = subprocess.Popen(rcmd, stdin=stdin, stdout=stdout, stderr=stderr, env=os.environ.copy(), pass_fds=(result_yaml.fileno(),))
@@ -76,5 +74,5 @@ def execute(cmd, timelimit=None, memorylimit=None, timeratio=1., limit_syscall=F
         logging.error('Wrong arguments')
         return ExecuteResult(-1, -1, -1, -1, 'SE')
     except Exception as e:
-        logging.error('Unknown error: {}'.format(e))
+        logging.exception('Unknown error: {}'.format(e))
         return ExecuteResult(-1, -1, -1, -1, 'SE')

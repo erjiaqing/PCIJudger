@@ -16,7 +16,7 @@ endif
 all: mirrorfs
 
 install: mirrorfs
-	$(SUDO) $(INSTALL) -D -m4550 -oroot -g$(LRUN_GROUP) -s $< $(DESTDIR)$(PREFIX)/bin/lrun-mirrorfs
+	$(INSTALL) -D -m4550 -oroot -g$(LRUN_GROUP) -s $< $(DESTDIR)$(PREFIX)/bin/lrun-mirrorfs
 
 clean:
 	-rm -f *.o mirrorfs

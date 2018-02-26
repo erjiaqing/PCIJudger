@@ -1,4 +1,4 @@
-import requests, json, yaml, os, sys, shutil, time
+import json, yaml, os, sys, shutil, time
 import logging, traceback, time, base64
 import tarfile, re
 
