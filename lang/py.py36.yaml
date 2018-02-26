@@ -1,0 +1,16 @@
+meta:
+  name: Python 3.6
+default: "main.py"
+source: "{filename}"
+executable: "{filename}.pyo"
+compile:
+  args:
+    - "/usr/bin/python3"
+    - "-c"
+    - "import py_compile;py_compile.compile('{source}', cfile='{executable}', doraise=True, optimize=2)"
+  timelimit: 10.0
+execute:
+  cmd:
+    - "/usr/bin/python3"
+    - "{executable}"
+  timeratio: 2.0

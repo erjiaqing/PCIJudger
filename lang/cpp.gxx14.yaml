@@ -1,0 +1,21 @@
+meta:
+  name: "C++14 with GNU GCC"
+validsuff: "(cpp|cc)"
+default: main.cpp
+source: "{filename}"
+executable: "{filename}.exe"
+compile:
+  args:
+    - "/usr/bin/g++-7"
+    - "{source}"
+    - "-o"
+    - "{executable}"
+    - "-O2"
+    - "-lm"
+    - "--std=c++14"
+    - "-DONLINE_JUDGE"
+  timelimit: 10.0
+execute:
+  cmd:
+    - "{executable}"
+  timeratio: 1.000

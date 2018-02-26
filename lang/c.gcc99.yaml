@@ -1,0 +1,21 @@
+meta:
+  name: "C99 with GNU GCC"
+validsuff: "c"
+default: main.c
+source: "{filename}"
+executable: "{filename}.exe"
+compile:
+  args:
+    - "/usr/bin/gcc-7"
+    - "{source}"
+    - "-o"
+    - "{executable}"
+    - "-O2"
+    - "-lm"
+    - "--std=c99"
+    - "-DONLINE_JUDGE"
+  timelimit: 10.0
+execute:
+  cmd:
+    - "{executable}"
+  timeratio: 1.000

@@ -1,0 +1,18 @@
+meta:
+  name: "Go"
+validsuff: "go"
+default: main.go
+source: "{filename}"
+executable: "{filename}.exe"
+compile:
+  args:
+    - "/usr/local/go/bin/go"
+    - "build"
+    - "-o"
+    - "{executable}"
+    - "{source}"
+  timelimit: 10.0
+execute:
+  cmd:
+    - "{executable}"
+  timeratio: 1.200
