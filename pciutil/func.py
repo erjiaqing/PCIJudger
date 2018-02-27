@@ -13,9 +13,9 @@ def check_or_create(path):
         
 def read_first_bytes(path):
     if True:
-        with open(os.path.join(path), 'rb') as inputfile:
-            if os.path.getsize(os.path.join(path)) > 64 + 32:
-                ret = inputfile.read(64).decode('utf-8', 'backslashreplace') + '...({} bytes)'.format(os.path.getsize(os.path.join(path) - 64))
+        with open(path, 'rb') as inputfile:
+            if os.path.getsize(path) > 64 + 32:
+                ret = inputfile.read(64).decode('utf-8', 'backslashreplace') + '...({} bytes)'.format(os.path.getsize(path) - 64)
             else:
                 ret = inputfile.read().decode('utf-8', 'backslashreplace')
         return ret

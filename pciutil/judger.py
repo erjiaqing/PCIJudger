@@ -55,7 +55,7 @@ def judge(conf, lang_file, code, problem):
             #
             execute_stdin = open(os.path.join(problem, test['input']), "r")
             execute_stdout = open("stdout", "w")
-            execute_res = executor_s.execute(full_args.execute, timelimit=time_limit, stdin=execute_stdin, stdout=execute_stdout, limit_syscall=True, timeratio=lang['execute'].get('timeratio', 1.0))
+            execute_res = executor_s.execute(full_args.execute, forbidden_path=[conf['problemrealpath'],], timelimit=time_limit, stdin=execute_stdin, stdout=execute_stdout, limit_syscall=True, timeratio=lang['execute'].get('timeratio', 1.0))
             execute_stdout.close()
             execute_stdin.close()
             #

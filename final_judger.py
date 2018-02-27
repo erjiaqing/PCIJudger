@@ -19,4 +19,4 @@ if __name__ == '__main__':
     else:
         arguments = parser.parse_args(sys.argv[1:])
     check_or_create(arguments.tmp)
-    call(["docker", "run", "--privileged", "--mount", "type=bind,source={},target=/problem,readonly".format(arguments.problem), "--mount", "type=bind,source={},target=/code/code,readonly".format(arguments.code), "--mount", "type=bind,source={},target=/fj_tmp".format(arguments.tmp), "erjiaqing/finaljudge", "--language", arguments.language])
+    call(["docker", "run", "--privileged", "--mount", "type=bind,source={},target=/problem,readonly".format(arguments.problem), "--mount", "type=bind,source={},target=/code/code,readonly".format(arguments.code), "--mount", "type=bind,source={},target=/fj_tmp".format(arguments.tmp), "erjiaqing/finaljudge", "--language", arguments.language, "--problemrealpath", os.path.join(arguments.problem)])
