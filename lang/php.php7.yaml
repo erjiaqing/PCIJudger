@@ -1,0 +1,16 @@
+meta:
+  name: PHP7
+default: "main.php"
+source: "{filename}"
+executable: "{filename}"
+compile:
+  args:
+    - "/usr/bin/php"
+    - "-l"
+    - "{source}"
+  timelimit: 10.0
+execute:
+  cmd:
+    - "/usr/bin/php"
+    - "{executable}"
+  timeratio: 2.0

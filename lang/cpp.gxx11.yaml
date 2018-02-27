@@ -1,18 +1,18 @@
 meta:
-  name: "C99 with GNU GCC"
-validsuff: "c"
-default: main.c
+  name: "C++11 with GNU GCC"
+validsuff: "(cpp|cc)"
+default: main.cpp
 source: "{filename}"
 executable: "{filename}.exe"
 compile:
   args:
-    - "/usr/bin/gcc"
+    - "/usr/bin/g++"
     - "{source}"
     - "-o"
     - "{executable}"
     - "-O2"
     - "-lm"
-    - "-std=c99"
+    - "-std=c++11"
     - "-DONLINE_JUDGE"
   timelimit: 10.0
 execute:

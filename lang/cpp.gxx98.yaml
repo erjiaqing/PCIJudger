@@ -1,5 +1,5 @@
 meta:
-  name: "C++14 with GNU GCC"
+  name: "C++98 with GNU GCC"
 validsuff: "(cpp|cc)"
 default: main.cpp
 source: "{filename}"
@@ -12,6 +12,7 @@ compile:
     - "{executable}"
     - "-O2"
     - "-lm"
+    - "-std=c++98"
     - "-DONLINE_JUDGE"
   timelimit: 10.0
 execute:

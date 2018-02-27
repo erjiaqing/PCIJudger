@@ -1,0 +1,15 @@
+meta:
+  name: C# with Mono
+default: "Program.cs"
+source: "Program.cs"
+executable: "Program.exe"
+compile:
+  args:
+    - "/usr/bin/mcs"
+    - "{source}"
+  timelimit: 10.0
+execute:
+  cmd:
+    - "/usr/bin/mono"
+    - "{executable}"
+  timeratio: 2.0

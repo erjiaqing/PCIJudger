@@ -87,8 +87,8 @@ def judge(conf, lang_file, code, problem):
             this_detail['verdict'] = verdict
             detail.append(this_detail)
     except Exception as e:
-        traceback.print_exc()
-        logging.error(e)
+        if e != "CE":
+            logging.exception(e)
     finally:
         # 切个毛线切，搞完收工走人
         session_time = time.time() - session_start
