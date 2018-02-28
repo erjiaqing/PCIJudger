@@ -18,6 +18,7 @@ class JudgeResult:
         self.detail = detail
 
 def judge(conf, lang_file, code, problem):
+    current_dir = os.getcwd()
     verdict = "SE"
     session_start = time.time()
     exe_time = 0.
@@ -94,6 +95,7 @@ def judge(conf, lang_file, code, problem):
     finally:
         # 切个毛线切，搞完收工走人
         session_time = time.time() - session_start
-        executor.execute(['/usr/local/bin/lrun-mirrorfs', '--name', chroot_name, '--teardown', 'mirrorfs.conf'])
+        executor.execute(['/usr/local/bin/lrun-mirrorfs', '--name', chroot_name, '--teardown', '/fj/mirrorfs.conf'])
+        os.chdir(current_dir)
         return JudgeResult(verdict, exe_time, int(exe_memory / 1024), 0, session_time, detail)
 

@@ -4,7 +4,7 @@ import logging, traceback, time, base64
 import tarfile, re
 import argparse
 
-from pciutil import func, judger
+from pciutil import func, judger, problem, check
 
 LOGGING_FORMAT = '%(asctime)s %(levelname)8s : %(message)s'
 logging.basicConfig(format=LOGGING_FORMAT, datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
@@ -21,6 +21,7 @@ if __name__ == '__main__':
     parser.add_argument('--problem', default="/problem")
     parser.add_argument('--code', default="/code/code")
     parser.add_argument('--language', default="")
+    parser.add_argument('--action', default="judge")
     if sys.argv[0] == 'python' or sys.argv[0] == 'python3':
         arguments = parser.parse_args(sys.argv[2:])
     else:
@@ -40,9 +41,16 @@ if __name__ == '__main__':
     check_or_create(conf['tmp'])
     conf['lang'] = os.path.join(conf['cwd'], 'lang')
     check_or_create(conf['lang'])
-    #
-    if not os.path.isfile(os.path.join(conf['lang'], arguments.language + '.yaml')):
-        sys.exit(1)
-    #
-    judge_res = judger.judge(conf, os.path.join(conf['lang'], arguments.language + '.yaml'), arguments.code, arguments.problem)
-    print(json.dumps(vars(judge_res), indent=4, sort_keys=True))
+    if arguments.action == 'check':
+        checker = check.Checker(conf, os.getcwd())
+        result = checker.process_work()
+        print(json.dumps(vars(result), indent=4))
+    elif arguments.action == 'build':
+        problem.compile_problem(conf, '/problem', '/code')
+    else:
+        #
+        if not os.path.isfile(os.path.join(conf['lang'], arguments.language + '.yaml')):
+            sys.exit(1)
+        #
+        judge_res = judger.judge(conf, os.path.join(conf['lang'], arguments.language + '.yaml'), arguments.code, arguments.problem)
+        print(json.dumps(vars(judge_res), indent=4, sort_keys=True))

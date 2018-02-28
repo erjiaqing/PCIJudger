@@ -4,7 +4,7 @@ import tarfile, re
 import subprocess, traceback
 import string
 
-from . import executor, compiler, judger, func, log
+from . import executor, compiler, judger, func, log, problem
 
 class CheckerResult:
     def __init__(self, success, log):
@@ -15,42 +15,31 @@ class Checker:
     def __init__(self, conf, root):
         self.conf = conf
         self.root = root
-    
-    def git_fetch(self, repo, version, stdout_fp, stderr_fp):
-        git_log = log.PCILog("git.fetch")
-        tmpdir = base64.b32encode(os.urandom(10)).decode('utf-8')
-        subprocess.run(["git", "clone", repo, tmpdir], stdin=None, stdout=stdout_fp, stderr=stderr_fp, check=True)
-        git_log.append(" ".join(["git", "clone", repo, tmpdir]))
-        os.chdir(os.path.join(os.getcwd(), tmpdir))
-        subprocess.run(["git", "checkout", version], stdin=None, stdout=stdout_fp, stderr=stderr_fp, check=True)
-        git_log.append(" ".join(["git", "checkout", version]))
-        return git_log
 
-    def process_work(self, task):
+    def process_work(self):
         old_cwd = os.getcwd()
-        result = True
+        vresult = True
         result_json = []
         try:
+            # problem path: /problem
+            # 先拷贝一份题目到临时文件夹，因为不能修改指定的文件夹
+            # 在用docker调用的时候，check是指检查一个给定的目录下面的试题
             tmpdir = base64.b32encode(os.urandom(10)).decode('utf-8')
             basedir = os.path.join(self.conf['tmp'], tmpdir)
-            func.check_or_create(basedir)
+            problem_source_dir = '/problem'
+            func.copytree(problem_source_dir, basedir)
             os.chdir(basedir)
-            git_log = log.PCILog("git")
-            git_log.append("git clone")
-            start_time = time.time()
-            git_log.merge(self.git_fetch(task['problem']['clone_url'], task['param']['sha'], None, None))
-            git_time = time.time() - start_time
-            result_json.append(dict(name="git", time=git_time, output=git_log.to_array()))
             # 编译题目
             compile_problem_log = log.PCILog("build")
             compile_problem_log.append("build problem")
             compiled_problem_dir = os.path.join(self.conf['tmp'], base64.b32encode(os.urandom(10)).decode('utf-8'))
             start_time = time.time()
-            problem_compile_result = judger.compile_problem(self.conf, os.getcwd(), compiled_problem_dir)
+            logging.info('build problem')
+            problem_compile_result = problem.compile_problem(self.conf, os.getcwd(), compiled_problem_dir)
+            logging.info('problem built')
             problem_compile_time = time.time() - start_time
             compile_problem_log.append(problem_compile_result.log)
             result_json.append(dict(name="build problem", time=problem_compile_time, output=compile_problem_log.to_array()))
-            print(result_json)
             if not problem_compile_result.success:
                 shutil.rmtree(compiled_problem_dir)
                 raise Exception("Failed to build problem")
@@ -69,20 +58,21 @@ class Checker:
                     lang_file = os.path.join(self.conf['lang'], lang + '.yaml')
                     stepoutput.append("command={} file={} language={}\n".format(cmd['type'], src, lang))
                     with open(lang_file, 'r') as lang_fp:
-                        lang_file = yaml.load(lang_fp)
+                        lang_file_c = yaml.load(lang_fp)
                     if cmd['type'] == 'compile':
-                        result = compiler.compile(lang_file, os.getcwd(), src)
+                        logging.info('Compile %s', src)
+                        result = compiler.compile(lang_file_c, os.getcwd(), src)
                         stepoutput.append("Compiler Output:\n{}".format(result.compiler_output))
                         if not result.success:
                             success = False
                             break
                     elif cmd['type'] == 'judge':
+                        logging.info('Judge %s, expect (%s)', src, ', '.join(cmd['expect']))
                         result = judger.judge(self.conf, lang_file, os.path.join(os.getcwd(), cmd['file']['source']), compiled_problem_dir)
-                        stepoutput.merge(result.log)
-                        stepoutput.append("judger returned with {}, exe_time: {}, exit code: {}".format(result.result, result.used_time, result.exit_code))
+                        stepoutput.append("judger returned with {}, exe_time: {}, exit code: {}".format(result.verdict, result.used_time, result.exit_code))
                         expected_result = False
                         for v in cmd['expect']:
-                            if v == result.result:
+                            if v == result.verdict:
                                 expected_result = True
                                 break
                         if not expected_result:
@@ -94,7 +84,7 @@ class Checker:
                 result_json.append(tresult)
                 stepoutput = None
                 if not success:
-                    result = False
+                    vresult = False
                     break
             pass
         except Exception as e:
@@ -108,4 +98,4 @@ class Checker:
                 shutil.rmtree(compiled_problem_dir)
             except:
                 pass
-            return CheckerResult(result, result_json)
+            return CheckerResult(vresult, result_json)

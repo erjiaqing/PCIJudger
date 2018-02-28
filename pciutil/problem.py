@@ -15,7 +15,7 @@ class CompileResult:
 def compile_problem(conf, problem, dest):
     # 先创建一份试题的副本
     logging.debug("Compile problem %s -> %s", problem, dest)
-    shutil.copytree(problem, dest)
+    func.copytree(problem, dest)
     current_dir = os.getcwd()
     # 切到试题所在的目录，然后编译
     os.chdir(dest)
