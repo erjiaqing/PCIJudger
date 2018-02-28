@@ -33,8 +33,8 @@ def execute(cmd, timelimit=None, memorylimit=None, timeratio=1., chroot="", forb
         stdin = subprocess.DEVNULL
     if stdout == None:
         stdout = subprocess.DEVNULL
-    #if stderr == None:
-    #    stderr = subprocess.DEVNULL
+    if stderr == None:
+        stderr = subprocess.DEVNULL
     try:
         cpu_tl = timelimit * timeratio
         real_tl = cpu_tl * 1.5

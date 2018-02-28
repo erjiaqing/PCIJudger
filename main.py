@@ -21,7 +21,6 @@ if __name__ == '__main__':
     parser.add_argument('--problem', default="/problem")
     parser.add_argument('--code', default="/code/code")
     parser.add_argument('--language', default="")
-    parser.add_argument('--problemrealpath', default="/problem")
     if sys.argv[0] == 'python' or sys.argv[0] == 'python3':
         arguments = parser.parse_args(sys.argv[2:])
     else:
@@ -41,7 +40,6 @@ if __name__ == '__main__':
     check_or_create(conf['tmp'])
     conf['lang'] = os.path.join(conf['cwd'], 'lang')
     check_or_create(conf['lang'])
-    conf['problemrealpath'] = arguments.problemrealpath
     #
     if not os.path.isfile(os.path.join(conf['lang'], arguments.language + '.yaml')):
         sys.exit(1)
