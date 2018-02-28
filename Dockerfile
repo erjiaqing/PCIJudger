@@ -9,6 +9,7 @@ COPY /lrun /fj/lrun
 COPY /pciutil /fj/pciutil
 COPY ["judger.yaml", "/fj/"]
 COPY ["main.py", "/fj/"]
+COPY ["mirrorfs.conf", "/fj/"]
 RUN cd /fj/lrun && make install && useradd runner && adduser runner lrun
 
 WORKDIR /fj/

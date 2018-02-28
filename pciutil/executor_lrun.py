@@ -24,7 +24,7 @@ class ExecuteResult:
         self.exit_signal = exit_signal
         self.exit_reason = exit_reason
 
-def execute(cmd, timelimit=None, memorylimit=None, timeratio=1., forbidden_path=[], limit_syscall=False, stdin=None, stdout=None, stderr=None):
+def execute(cmd, timelimit=None, memorylimit=None, timeratio=1., chroot="", forbidden_path=[], limit_syscall=False, stdin=None, stdout=None, stderr=None):
     if timelimit == None:
         timelimit = 1
     if memorylimit == None:
@@ -41,11 +41,10 @@ def execute(cmd, timelimit=None, memorylimit=None, timeratio=1., forbidden_path=
         result_yaml = open('result.yaml', 'w')
         rcmd = ['/usr/local/bin/lrun', '--max-real-time', str(real_tl), '--max-cpu-time', str(cpu_tl), '--max-stack', '536870912', '--max-memory', str(memorylimit), '--network', 'false', '--result-fd', str(result_yaml.fileno())]
         if limit_syscall:
+            rcmd.extend(['--chroot', chroot])
+            rcmd.extend(['--remount-dev', 'true'])
+            rcmd.extend(['--chdir', '/fj_tmp'])
             rcmd.extend(['--syscalls', '!execve,flock,ptrace,sync,fdatasync,fsync,msync,sync_file_range,syncfs,unshare,setns,clone[a&268435456==268435456],query_module,sysinfo,syslog,sysfs'])
-            for p in forbidden_path:
-                rcmd.extend(['--fopen-filter', 'm:/:^{}(.*)'.format(p), 'd'])
-            # 因为在docker里面，所以别的文件啥的都无关紧要
-            # 不需要考虑密码的泄露问题
         rcmd.append('--')
         rcmd.extend(cmd)
         exe = subprocess.Popen(rcmd, stdin=stdin, stdout=stdout, stderr=stderr, env=os.environ.copy(), pass_fds=(result_yaml.fileno(),))

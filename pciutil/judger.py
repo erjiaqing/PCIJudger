@@ -49,13 +49,15 @@ def judge(conf, lang_file, code, problem):
         time_limit = int(problem_yaml.get('time', 1000)) / 1000
         verdict = "AC"
         testid = 0
+        chroot_name = base64.b32encode(os.urandom(10)).decode('utf-8')
+        executor.execute(['/usr/local/bin/lrun-mirrorfs', '--name', chroot_name, '--setup', '/fj/mirrorfs.conf'])
         for test in problem_yaml['case']:
             testid += 1
             this_detail = dict(name="Test #{}".format(testid))
             #
             execute_stdin = open(os.path.join(problem, test['input']), "r")
             execute_stdout = open("stdout", "w")
-            execute_res = executor_s.execute(full_args.execute, forbidden_path=[conf['problemrealpath'],], timelimit=time_limit, stdin=execute_stdin, stdout=execute_stdout, limit_syscall=True, timeratio=lang['execute'].get('timeratio', 1.0))
+            execute_res = executor_s.execute(full_args.execute, chroot=os.path.join('/fj_tmp/mirrorfs/', chroot_name), forbidden_path=[conf['problemrealpath'],], timelimit=time_limit, stdin=execute_stdin, stdout=execute_stdout, limit_syscall=True, timeratio=lang['execute'].get('timeratio', 1.0))
             execute_stdout.close()
             execute_stdin.close()
             #
@@ -92,5 +94,6 @@ def judge(conf, lang_file, code, problem):
     finally:
         # 切个毛线切，搞完收工走人
         session_time = time.time() - session_start
+        executor.execute(['/usr/local/bin/lrun-mirrorfs', '--name', chroot_name, '--teardown', 'mirrorfs.conf'])
         return JudgeResult(verdict, exe_time, int(exe_memory / 1024), 0, session_time, detail)
 

@@ -44,7 +44,7 @@ if __name__ == '__main__':
     conf['problemrealpath'] = arguments.problemrealpath
     #
     if not os.path.isfile(os.path.join(conf['lang'], arguments.language + '.yaml')):
-        os.exit(1)
+        sys.exit(1)
     #
     judge_res = judger.judge(conf, os.path.join(conf['lang'], arguments.language + '.yaml'), arguments.code, arguments.problem)
     print(json.dumps(vars(judge_res), indent=4, sort_keys=True))

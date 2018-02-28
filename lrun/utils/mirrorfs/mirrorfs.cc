@@ -45,7 +45,7 @@ using std::set;
 #ifndef MIRRORFS_ROOT
 // /run seems to be the de facto standard, instead of /var/run
 // http://lwn.net/Articles/436012/
-# define MIRRORFS_ROOT "/run/lrun/mirrorfs"
+# define MIRRORFS_ROOT "/fj_tmp/mirrorfs"
 #endif
 #define VERSION "v0.3"
 
