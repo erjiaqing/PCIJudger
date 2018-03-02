@@ -1,5 +1,9 @@
-Final Judger
+PCI Judger
 ============
+
+PCI Judger = ProblemCI Judger
+
+(叫FinalJudger是不是太嚣张了？)
 
 以下所有命令均可添加--tmp指定临时目录
 
