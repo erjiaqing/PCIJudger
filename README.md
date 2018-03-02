@@ -16,7 +16,7 @@ docker build -t erjiaqing/finaljudge .
 ### 评测
 
 ```
-./final_judger.py --problem {:problem} --code {:code} --language {:language}
+./final_judger.py --problem {:problem} --code {:code} --language {:language} --action judge
 ```
 
 评测结果会以JSON格式写入标准输出
@@ -38,7 +38,7 @@ Python (Python 3.6)
 ### 检查题目
 
 ```
-./final_judger.py --problem {:problem}
+./final_judger.py --problem {:problem} --action check
 ```
 
 检查结果会以JSON格式输出
@@ -46,7 +46,7 @@ Python (Python 3.6)
 ### 构建题目
 
 ```
-./final_judger.py --problem {:problem} --dest {:problem_dest}
+./final_judger.py --problem {:problem} --dest {:problem_dest} --action build
 ```
 
 将problem指定的目录的内容复制到problem_dest目录下，然后在problem_dest目录下构建
