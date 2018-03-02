@@ -1,0 +1,16 @@
+meta:
+  name: Haskell / GHC 7.
+default: "main.hs"
+source: "{filename}"
+executable: "{filename}.exe"
+compile:
+  args:
+    - "/usr/bin/ghc"
+    - "{source}"
+    - "-o"
+    - "{executable}"
+  timelimit: 10.0
+execute:
+  cmd:
+    - "{executable}"
+  timeratio: 1.2

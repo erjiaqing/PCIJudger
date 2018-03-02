@@ -285,6 +285,7 @@ static int run_command() {
 
         if (e == pid) {
             // stat available
+            INFO("miao?");
             if (WIFEXITED(stat) || WIFSIGNALED(stat)) {
                 INFO("child exited");
                 break;
@@ -292,11 +293,12 @@ static int run_command() {
         } else if (e == -1) {
             // see what's wrong
             if (errno == ECHILD) {
+                INFO("wtf?");
                 // strangely, this happens at the beginning (?)
                 usleep(config.interval);
             }
         }
-
+        INFO("LOOP PHASE 2");
         // clean stat
         stat = 0;
 

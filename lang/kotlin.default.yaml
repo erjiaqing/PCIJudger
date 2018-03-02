@@ -1,0 +1,20 @@
+meta:
+  name: Kotlin
+default: "main.kt"
+source: "{filename}"
+executable: "{filename}.jar"
+compile:
+  args:
+    
+    - "/fj/kotlinc/bin/kotlinc"
+    - "{source}"
+    - "-include-runtime"
+    - "-d"
+    - "{executable}"
+  timelimit: 10.0
+execute:
+  cmd:
+    - "java"
+    - "-jar"
+    - "{executable}"
+  timeratio: 2.5

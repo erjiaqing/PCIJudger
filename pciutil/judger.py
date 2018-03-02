@@ -54,6 +54,7 @@ def judge(conf, lang_file, code, problem):
         executor.execute(['/usr/local/bin/lrun-mirrorfs', '--name', chroot_name, '--setup', '/fj/mirrorfs.conf'])
         for test in problem_yaml['case']:
             testid += 1
+            logging.info('Judge on test #{}'.format(testid))
             this_detail = dict(name="Test #{}".format(testid))
             #
             execute_stdin = open(os.path.join(problem, test['input']), "r")
@@ -73,6 +74,7 @@ def judge(conf, lang_file, code, problem):
                 verdict = execute_res.exit_reason
                 this_detail['verdict'] = verdict
                 detail.append(this_detail)
+                logging.info("Test #{}: {} exetime={} exememory={}".format(testid, this_detail['verdict'], this_detail['exe_time'], this_detail['exe_memory']))
                 break
             this_detail['answer'] = func.read_first_bytes(os.path.join(problem, test['output']))
             this_detail['your output'] = func.read_first_bytes("stdout")
@@ -86,8 +88,10 @@ def judge(conf, lang_file, code, problem):
                 verdict = 'WA'
                 this_detail['verdict'] = verdict
                 detail.append(this_detail)
+                logging.info("Test #{}: {} exetime={} exememory={}".format(testid, this_detail['verdict'], this_detail['exe_time'], this_detail['exe_memory']))
                 break
             this_detail['verdict'] = verdict
+            logging.info("Test #{}: {} exetime={} exememory={}".format(testid, this_detail['verdict'], this_detail['exe_time'], this_detail['exe_memory']))
             detail.append(this_detail)
     except Exception as e:
         if e != "CE":
@@ -95,7 +99,10 @@ def judge(conf, lang_file, code, problem):
     finally:
         # 切个毛线切，搞完收工走人
         session_time = time.time() - session_start
-        executor.execute(['/usr/local/bin/lrun-mirrorfs', '--name', chroot_name, '--teardown', '/fj/mirrorfs.conf'])
+        try:
+            executor.execute(['/usr/local/bin/lrun-mirrorfs', '--name', chroot_name, '--teardown', '/fj/mirrorfs.conf'])
+        except:
+            pass
         os.chdir(current_dir)
         return JudgeResult(verdict, exe_time, int(exe_memory / 1024), 0, session_time, detail)
 

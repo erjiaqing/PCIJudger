@@ -43,7 +43,7 @@ MainConfig::MainConfig() {
     this->enable_devices_whitelist = false;
     this->enable_network = true;
     this->enable_pidns = true;
-    this->interval = (useconds_t)(0.02 * 1000000);
+    this->interval = (useconds_t)(0.05 * 1000000);
     this->active_cgroup = NULL;
     this->pass_exitcode = false;
     this->write_result_to_3 = fs::is_accessible("/proc/self/fd/3", F_OK);
