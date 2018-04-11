@@ -3,7 +3,7 @@ COPY /lrun /fj/lrun
 COPY /pciutil /fj/pciutil
 COPY /lang /fj/lang
 COPY /kotlinc /fj/kotlinc
-COPY ["judger.yaml", "main.py", "mirrorfs.conf", "README", "/fj/"]
+COPY ["judger.yaml", "main.py", "mirrorfs.conf", "/fj/"]
 
 
 FROM ubuntu:16.04
