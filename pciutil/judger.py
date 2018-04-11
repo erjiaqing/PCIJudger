@@ -37,6 +37,9 @@ def judge(conf, lang_file, code, problem):
         with open(code, 'r') as src:
             src_file.write(src.read())
         src_file.close()
+        # load problem.yaml
+        with open(os.path.join(problem, "problem.yaml"), "r") as problem_yaml_fp:
+            problem_yaml = yaml.load(problem_yaml_fp)
         # If this problem requires extern files to compile or run, copy them to tmp
         extern_files = problem_yaml.get('additionalLibrary', [])
         for ext_file in extern_files:
@@ -49,8 +52,6 @@ def judge(conf, lang_file, code, problem):
             verdict = "CE"
             raise Exception("CE")
         # 评测
-        with open(os.path.join(problem, "problem.yaml"), "r") as problem_yaml_fp:
-            problem_yaml = yaml.load(problem_yaml_fp)
         time_limit = int(problem_yaml.get('time', 1000)) / 1000
         verdict = "AC"
         testid = 0
