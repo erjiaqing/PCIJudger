@@ -40,6 +40,21 @@ def compile_problem(conf, problem, dest):
             success = False
             break
         break
+    while True:
+        compile_log += "Compiling interactor"
+        checker = problem_meta.get("interactor", False)
+        if not checker:
+            compile_log += "source code of interactor not found\n"
+            break
+        with open(os.path.join(conf['lang'], checker['lang'] + '.yaml')) as lang_conf_fp:
+            lang_conf = yaml.load(lang_conf_fp)
+        result = compiler.compile(lang_conf, os.getcwd(), checker['source'], checker.get('exe', checker['source'] + '.exe'))
+        if not result.success:
+            compile_log += "compile interactor with failure\n"
+            compile_log += result.compiler_output
+            success = False
+            break
+        break
     # 退回到开始的目录
     os.chdir(current_dir)
     return CompileResult(success, compile_log)

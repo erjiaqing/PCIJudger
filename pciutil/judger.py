@@ -62,11 +62,23 @@ def judge(conf, lang_file, code, problem):
             logging.info('Judge on test #{}'.format(testid))
             this_detail = dict(name="Test #{}".format(testid))
             #
-            execute_stdin = open(os.path.join(problem, test['input']), "r")
-            execute_stdout = open("stdout", "w")
-            execute_res = executor_s.execute(full_args.execute, chroot=os.path.join('/fj_tmp/mirrorfs/', chroot_name), forbidden_path=[], timelimit=time_limit, stdin=execute_stdin, stdout=execute_stdout, limit_syscall=True, timeratio=lang['execute'].get('timeratio', 1.0))
-            execute_stdout.close()
-            execute_stdin.close()
+            inter = problem_yaml.get('interactor', False)
+            if inter:
+                logging.info("User interactor")
+                inter_err = open('inter_err', 'w')
+                inter_cmd = [os.path.join(problem, problem_yaml['interactor'].get('exe', problem_yaml['interactor']['source'] + '.exe'))]
+                inter_cmd.append(os.path.join(problem, test['input']))
+                inter_cmd.append(os.path.join(os.getcwd(), "stdout"))
+                inter_cmd.append(os.path.join(problem, test['output']))
+                execute_res = executor_s.execute_interactor(full_args.execute, inter_cmd, chroot=os.path.join('/fj_tmp/mirrorfs/', chroot_name), forbidden_path=[], timelimit=time_limit, limit_syscall=True, timeratio=lang['execute'].get('timeratio', 1.0), stderr=inter_err)
+                inter_err.close()
+                this_detail['interactor output'] = func.read_first_bytes("inter_err")
+            else:
+                execute_stdin = open(os.path.join(problem, test['input']), "r")
+                execute_stdout = open("stdout", "w")
+                execute_res = executor_s.execute(full_args.execute, chroot=os.path.join('/fj_tmp/mirrorfs/', chroot_name), forbidden_path=[], timelimit=time_limit, stdin=execute_stdin, stdout=execute_stdout, limit_syscall=True, timeratio=lang['execute'].get('timeratio', 1.0))
+                execute_stdout.close()
+                execute_stdin.close()
             #
             this_detail['input'] = func.read_first_bytes(os.path.join(problem, test['input']))
             this_detail['exe_time'] = execute_res.exe_time
