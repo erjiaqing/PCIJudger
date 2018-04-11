@@ -14,6 +14,13 @@ PCI Judger = ProblemCI Judger
 docker build -t erjiaqing/finaljudge .
 ```
 
+特性
+-----
+1. 支持SpecialJudge，事实上，所有题目都需要显式指明SpecialJudge，SpecialJudge的格式参考 MikeMirzayanov/testlib
+2. 支持交互题，交互器的格式同样参考 MikeMirzayanov/testlib
+3. 支持多组Case
+4. 易于配置的语言
+
 用法
 -----
 
