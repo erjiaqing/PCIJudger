@@ -37,6 +37,10 @@ def judge(conf, lang_file, code, problem):
         with open(code, 'r') as src:
             src_file.write(src.read())
         src_file.close()
+        # If this problem requires extern files to compile or run, copy them to tmp
+        extern_files = problem_yaml.get('additionalLibrary', [])
+        for ext_file in extern_files:
+            shutil.copy(os.path.join(problem, ext_file), ext_file)
         # 编译
         result = compiler.compile(lang, os.getcwd(), full_args.source)
         if result.compiler_output != "":
