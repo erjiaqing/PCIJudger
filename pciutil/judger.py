@@ -33,8 +33,8 @@ def judge(conf, lang_file, code, problem):
         # 计算编译和运行的参数
         full_args = compiler.get_execute_command(lang, code, os.getcwd(), True)
         # 写文件
-        src_file = open(full_args.source, 'w')
-        with open(code, 'r') as src:
+        src_file = open(full_args.source, 'wb')
+        with open(code, 'rb') as src:
             src_file.write(src.read())
         src_file.close()
         # load problem.yaml
