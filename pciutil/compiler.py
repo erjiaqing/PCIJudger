@@ -25,7 +25,7 @@ class ExecuteCommand:
 
 def get_execute_command(language, source_file, path, request_name=False):
     run_cmd_dict = {}
-    with open(source_file, 'r') as src_fp:
+    with open(source_file, 'rb') as src_fp:
         source = src_fp.read()
     if language.get('variable', None) != None:
         for var in language['variable']:
