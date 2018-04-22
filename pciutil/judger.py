@@ -96,7 +96,7 @@ def judge(conf, lang_file, code, problem):
             this_detail['answer'] = func.read_first_bytes(os.path.join(problem, test['output']))
             this_detail['your output'] = func.read_first_bytes("stdout")
             # TODO: checker按checker的语言来跑
-            checker_cmd = [os.path.join(problem, problem_yaml['checker'].get('exe', problem_yaml['checker']['source'] + '.exe')), os.path.join(problem, test['input']), os.path.join(problem, test['output']), 'stdout']
+            checker_cmd = [os.path.join(problem, problem_yaml['checker'].get('exe', problem_yaml['checker']['source'] + '.exe')), os.path.join(problem, test['input']), 'stdout', os.path.join(problem, test['output'])]
             checker_stdout = open('chk_stdout', 'w')
             checker_res = executor.execute(checker_cmd, timelimit=time_limit, stdout=checker_stdout, stderr=checker_stdout)
             checker_stdout.close()

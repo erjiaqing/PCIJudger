@@ -19,7 +19,7 @@ compile:
 execute:
   cmd:
     - "/usr/bin/java"
-    - "-Xmx2048M"
+    - "-Xmx512M"
     - "-Xss256M"
     - "{mainclass}"
   timeratio: 2.0
