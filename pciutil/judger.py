@@ -43,13 +43,13 @@ def judge(conf, lang_file, code, problem):
             try:
                 with open(os.path.join(problem, code_template + ".header." + lang_file[:-5]), 'rb') as header:
                     template_header = header.read()
-            except:
-                pass
+            except Exception as e:
+                logging.exception(e)
             try:
                 with open(os.path.join(problem, code_template + ".footer." + lang_file[:-5]), 'rb') as footer:
                     template_footer = footer.read()
-            except:
-                pass
+            except Exception as e:
+                logging.exception(e)
         # 写文件
         src_file = open(full_args.source, 'wb')
         with open(code, 'rb') as src:
