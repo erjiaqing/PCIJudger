@@ -32,14 +32,31 @@ def judge(conf, lang_file, code, problem):
         os.chdir(working_dir)
         # 计算编译和运行的参数
         full_args = compiler.get_execute_command(lang, code, os.getcwd(), True)
-        # 写文件
-        src_file = open(full_args.source, 'wb')
-        with open(code, 'rb') as src:
-            src_file.write(src.read())
-        src_file.close()
         # load problem.yaml
         with open(os.path.join(problem, "problem.yaml"), "r") as problem_yaml_fp:
             problem_yaml = yaml.load(problem_yaml_fp)
+        # leetcode模式
+        code_template = problem_yaml.get('template', False)
+        template_header = b''
+        template_footer = b''
+        if code_template != False:
+            try:
+                with open(os.path.join(problem, code_template + ".header." + lang_file[:-5]), 'rb') as header:
+                    template_header = header.read()
+            except:
+                pass
+            try:
+                with open(os.path.join(problem, code_template + ".footer." + lang_file[:-5]), 'rb') as footer:
+                    template_footer = footer.read()
+            except:
+                pass
+        # 写文件
+        src_file = open(full_args.source, 'wb')
+        with open(code, 'rb') as src:
+            src_file.write(template_header)
+            src_file.write(src.read())
+            src_file.write(template_footer)
+        src_file.close()
         # If this problem requires extern files to compile or run, copy them to tmp
         extern_files = problem_yaml.get('additionalLibrary', [])
         for ext_file in extern_files:

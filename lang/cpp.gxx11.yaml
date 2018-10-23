@@ -12,6 +12,7 @@ compile:
     - "{executable}"
     - "-O2"
     - "-lm"
+    - "-static"
     - "-std=c++11"
     - "-DONLINE_JUDGE"
   timelimit: 10.0
