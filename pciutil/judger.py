@@ -39,14 +39,15 @@ def judge(conf, lang_file, code, problem):
         code_template = problem_yaml.get('template', False)
         template_header = b''
         template_footer = b''
+        lang_base = os.path.basename(lang_file)
         if code_template != False:
             try:
-                with open(os.path.join(problem, code_template + ".header." + lang_file[:-5]), 'rb') as header:
+                with open(os.path.join(problem, code_template + ".header." + lang_base[:-5]), 'rb') as header:
                     template_header = header.read()
             except Exception as e:
                 logging.exception(e)
             try:
-                with open(os.path.join(problem, code_template + ".footer." + lang_file[:-5]), 'rb') as footer:
+                with open(os.path.join(problem, code_template + ".footer." + lang_base[:-5]), 'rb') as footer:
                     template_footer = footer.read()
             except Exception as e:
                 logging.exception(e)
